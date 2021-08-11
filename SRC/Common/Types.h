@@ -9,11 +9,11 @@ typedef unsigned short UInt16;
 typedef int Int32;
 typedef unsigned int UInt32;
 #ifdef _MSC_VER
-typedef __int64 Int64;
-typedef unsigned __int64 UInt64;
+    typedef __int64 Int64;
+    typedef unsigned __int64 UInt64;
 #else
-typedef long long int Int64;
-typedef unsigned long long int UInt64;
+    typedef long long int Int64;
+    typedef unsigned long long int UInt64;
 #endif
 
 #endif

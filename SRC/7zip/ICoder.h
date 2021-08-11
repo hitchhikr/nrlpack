@@ -21,10 +21,10 @@ MIDL_INTERFACE("23170F69-40C1-278A-0000-000200050000")
 ICompressCoder: public IUnknown
 {
     STDMETHOD(Code)(ISequentialInStream *inStream,
-        ISequentialOutStream *outStream, 
-        const UInt64 *inSize, 
-        const UInt64 *outSize,
-        ICompressProgressInfo *progress) = 0;
+                    ISequentialOutStream *outStream, 
+                    const UInt64 *inSize, 
+                    const UInt64 *outSize,
+                    ICompressProgressInfo *progress) = 0;
 };
 
 namespace NCoderPropID
@@ -53,7 +53,7 @@ MIDL_INTERFACE("23170F69-40C1-278A-0000-000200200000")
 ICompressSetCoderProperties: public IUnknown
 {
     STDMETHOD(SetCoderProperties)(const PROPID *propIDs, 
-        const PROPVARIANT *properties, UInt32 numProperties) PURE;
+                                  const PROPVARIANT *properties, UInt32 numProperties) PURE;
 };
 
 // {23170F69-40C1-278A-0000-000200270000}

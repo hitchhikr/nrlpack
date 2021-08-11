@@ -34,7 +34,7 @@ bool CInFileStream::Open(LPCWSTR fileName)
 STDMETHODIMP CInFileStream::Read(void *data, UInt32 size, UInt32 *processedSize)
 {
 #ifdef _WIN32
-  
+
     UInt32 realProcessedSize;
     bool result = File.Read(data, size, realProcessedSize);
     if(processedSize != NULL)

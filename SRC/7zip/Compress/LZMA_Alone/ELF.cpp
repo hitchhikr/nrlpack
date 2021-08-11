@@ -33,8 +33,11 @@ u8 ident[] =
 int Check_ELF(u8 *Buffer)
 {
 	eh = (elf_header_t *) Buffer;
-	if(*(u32 *) &eh->ident != ELF_MAGIC) return(0);
-	return(1);
+	if(*(u32 *) &eh->ident != ELF_MAGIC)
+    {
+        return(0);
+	}
+    return(1);
 }
 
 // --------------------------------------------

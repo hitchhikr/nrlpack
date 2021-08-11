@@ -5,7 +5,6 @@
 // --------------------------------------------
 // TODO:
 //
-// - Convert the lzma depacker again (in hand written asm this time).
 // - See if we can create a map file or isolate the code.
 // - See to use a disassembler and add a dictionary construction system for the packed exes.
 //   (Since there's other stuff than code in .text we may need a code tracer).
@@ -13,7 +12,7 @@
 // --------------------------------------------
 
 #define VERSION "1"
-#define REVISION "1"
+#define REVISION "2"
 
 #include "../../../Common/MyWindows.h"
 #include "../../../Common/MyInitGuid.h"
@@ -108,14 +107,18 @@ int main2(int n, const char *args[])
 
 	GetModuleFileName(NULL, tempName, MAX_PATH);
 	GetModuleFileName(NULL, tempName2, MAX_PATH);
+
 #ifndef DEPACKER_MEMORY
 	GetModuleFileName(NULL, depackerName, MAX_PATH);
 #endif
+
 	PathRemoveFileSpec(tempName);
 	PathRemoveFileSpec(tempName2);
+
 #ifndef DEPACKER_MEMORY
 	PathRemoveFileSpec(depackerName);
 #endif
+
 	strcat(tempName, "\\pack.tmp");
 	strcat(tempName2, "\\pack2.tmp");
 #ifndef DEPACKER_MEMORY
@@ -367,9 +370,9 @@ int main2(int n, const char *args[])
 		return 1;	
 	}
 #else
-	Depacker_File_Size = depacker_size;
+	Depacker_File_Size = depacker_bin_size;
 	Depacker_Code_Size = Depacker_File_Size - 16;
-	Depacker_Mem = depacker_Dats;
+	Depacker_Mem = (BYTE *) depacker_bin;
 	dwDepacker_Mem = (DWORD *) Depacker_Mem;
 #endif
 
@@ -462,6 +465,7 @@ int main2(int n, const char *args[])
 				Depacker_Mem[dwDepacker_Mem[1]] = (BYTE) ((DestAddress & 0xff0000) >> 16);
 				Depacker_Mem[dwDepacker_Mem[1] + 1] = (BYTE) ((DestAddress & 0xff000000) >> 24);
 
+                // Probs
 			    u32 TmpAddress = Post_Section_Header.memsz + Post_Section_Header.paddr;
 			    Depacker_Mem[dwDepacker_Mem[2] + 4] = (BYTE) (TmpAddress & 0xff);
 			    Depacker_Mem[dwDepacker_Mem[2] + 5] = (BYTE) ((TmpAddress & 0xff00) >> 8);
