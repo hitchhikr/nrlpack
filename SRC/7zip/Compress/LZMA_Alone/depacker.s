@@ -2,13 +2,13 @@
 # NRLPack LZMA Depacker v1.2
 # 1376 bytes
 
-                    .set noreorder
+                    .set    noreorder
                     .global _start
 
-Entry:              .long Source - Entry
-                    .long Dest - Entry
-                    .long Temp - Entry
-                    .long Run_Datas - Entry
+Entry:              .long   Source - Entry
+                    .long   Dest - Entry
+                    .long   Temp - Entry
+                    .long   Run_Datas - Entry
 
 # -------------------------------------------------
 State               =       -0x14

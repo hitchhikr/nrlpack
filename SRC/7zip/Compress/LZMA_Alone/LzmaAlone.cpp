@@ -1,14 +1,14 @@
-// LzmaAlone.cpp
+// NRLPack
+// Written by Franck Charlet.
+// Modified LZMA algorithm based on the work of Igor Pavlov.
+// --------------------------------------------
+// v1.2:
+//  - Shortened depacker.
 // v1.1:
 //  - Added support for elf files with mangled headers.
-
 // --------------------------------------------
 // TODO:
-//
-// - See if we can create a map file or isolate the code.
-// - See to use a disassembler and add a dictionary construction system for the packed exes.
-//   (Since there's other stuff than code in .text we may need a code tracer).
-//
+//  - Create a disassembler and add code filtering.
 // --------------------------------------------
 
 #define VERSION "1"
