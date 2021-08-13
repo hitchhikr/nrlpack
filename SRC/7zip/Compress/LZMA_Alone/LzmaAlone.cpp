@@ -12,7 +12,7 @@
 // --------------------------------------------
 
 #define VERSION "1"
-#define REVISION "2"
+#define REVISION "3"
 
 #include "../../../Common/MyWindows.h"
 #include "../../../Common/MyInitGuid.h"
@@ -180,7 +180,8 @@ int main2(int n, const char *args[])
                printf("\nCorrupted ELF file\n");
                return 1;
             }
-            ELF_File = fopen(tempName, "wb");           
+            
+            ELF_File = fopen(tempName, "wb");
             if(ELF_File)
             {
                // Save the raw datas
@@ -520,11 +521,11 @@ int main2(int n, const char *args[])
 
 int main(int n, const char *args[])
 {
-    try
+//    try
     {
         return main2(n, args);
     }
-    catch(const char *s)
+  /*  catch(const char *s)
     {
         printf("\nError: %s\n", s);
         return 1; 
@@ -533,5 +534,5 @@ int main(int n, const char *args[])
     {
         printf("\nException error !\n");
         return 1; 
-    }
+    }*/
 }

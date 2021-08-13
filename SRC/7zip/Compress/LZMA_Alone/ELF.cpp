@@ -79,7 +79,7 @@ u8 *Parse_ELF(u8 *Buffer, int Size)
 			    if(!First_Section)
                 {
                     First_Section = Tmpshead->offset;
-			    }
+                }
                 memcpy(Dest_Buffer + Tmpshead->offset - First_Section, Buffer + Tmpshead->offset, Tmpshead->size);
 			    ELF_Size = ((Dest_Buffer + Tmpshead->offset - First_Section) + Tmpshead->size) - Dest_Buffer;
 		    }

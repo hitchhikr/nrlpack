@@ -1,6 +1,6 @@
 # -------------------------------------------------
-# NRLPack LZMA Depacker v1.2
-# 1376 bytes
+# NRLPack LZMA Depacker v1.3
+# 1292 bytes
 
                     .set    noreorder
                     .global _start
@@ -11,32 +11,27 @@ Entry:              .long   Source - Entry
                     .long   Run_Datas - Entry
 
 # -------------------------------------------------
-State               =       -0x14
-var_B4              =       -0x10
-var_B0              =       -0xc
-var_AC              =       -0x8
-Range               =       -0x4
+var_B4              =       -0xc
+var_B0              =       -0x8
+var_AC              =       -0x4
 
 KBITMODELTOTAL      =       2048
 
 # $a0 = u16 *probLit
-
 Check_Bound:
-                    lw      $t0, Range($sp)
-                    li      $v0, 0xFFFFFF
-                    sltu    $v0, $t0
+                    sltu    $v0, $t0, $t6
                     daddu   $t1, $a0, $0
                     bnez    $v0, LSM9
-                    sll     $v1, $t0, 8
-                    daddu   $t0, $v1, $0
-                    sw      $v1, Range($sp)
+                    sll     $v1, $t6, 8
+                    
+                    move    $t6, $v1
                     lbu     $a0, 0($t8)
                     addiu   $t8, 1
                     sll     $t9, 8
                     or      $t9, $a0
 LSM9:
                     lhu     $a1, 0($t1)
-                    srl     $v0, $t0, 11      # Range << 11
+                    srl     $v0, $t6, 11      # Range << 11
                     move    $a0, $t9
                     li      $t3, 1
                     andi    $v1, $a1, 0xFFFF
@@ -50,14 +45,14 @@ LSM9:
                     addu    $a1, $v0
                     sltu    $a0, $a3
                     beqz    $a0, LSM17
-                    subu    $v0, $t0, $a3
-                    sw      $a3, Range($sp)
+                    subu    $t6, $t6, $a3
+                    
+                    move    $t6, $a3
                     sh      $a1, 0($t1)       # *(probLit) +=
 LSM16:
                     jr      $ra
                     daddu   $v0, $t3, $0
 LSM17:
-                    sw      $v0, Range($sp)
                     daddu   $t3, $0, $0
                     move    $t9, $v1
                     b       LSM16
@@ -77,8 +72,9 @@ Temp:
                     li      $s5, 1
                     daddu   $v1, $s6, $0
                     daddu   $a0, $0, $0
+                    li      $t0, 0xFFFFFF
 
-                    sw      $0,  State($sp)
+                    daddu   $t2, $0, $0
                     daddu   $s7, $0, $0
                     daddu   $s0, $0, $0
 
@@ -93,15 +89,12 @@ fill_probs:
                     bnez    $v0, fill_probs
                     addiu   $v1, 2
 
-                    addiu   $a3, $s7, -1        # $a3 = 0xffffffff
-                    sw      $a3, Range($sp)
+                    addiu   $t6, $s7, -1        # $t6 = 0xffffffff
                     lw      $t5, -8($t8)        # Uncompressed length
                     lw      $t9, -4($t8)        # Code
-
-                    lw      $v1, State($sp)     # 0
 depack_loop:
                     andi    $s1, $s7, 3
-                    sll     $a0, $v1, 4
+                    sll     $a0, $t2, 4
                     addu    $a0, $s1
                     sll     $a0, 1
                     bal     Check_Bound
@@ -112,10 +105,9 @@ depack_loop:
 
                     li      $v1, 0x600
                     mult    $a0, $v0, $v1
-                    lw      $a1, State($sp)
                     li      $v1, 1
                     addu    $v0, $a0, $s6
-                    slti    $a0, $a1, 7
+                    slti    $a0, $t2, 7
                     bnez    $a0, L93
                     addiu   $s2, $v0, 0xE6C
 
@@ -144,31 +136,30 @@ LSM45:
 
                     andi    $s0, $v1, 0xFF
 LSM47:
-                    lw      $a0, State($sp)
                     addu    $v0, $t4, $s7
                     addiu   $s7, 1
-                    slti    $v1, $a0, 4
+                    slti    $v1, $t2, 4
                     beqz    $v1, LSM51
                     sb      $s0, 0($v0)
 
-                    sw      $0,  State($sp)
+                    move    $t2, $0
                     sltu    $a1, $s7, $t5
 L8:
                     bnezl   $a1, depack_loop
-                    lw      $v1, State($sp)
+                    nop
 End_Depack:
                     daddu   $a0, $t7, 0         # restore args
 Run_Datas:
                     j       0x02345678          # Entry point 0x7a2700 #
 LSM51:
-                    lw      $v0, State($sp)
+                    move    $v0, $t2
                     addiu   $a0, $v0, 0xFFFA
                     slti    $v1, $v0, 0xA
                     addiu   $v0, 0xFFFD
                     sltu    $a1, $s7, $t5
                     movz    $v0, $a0, $v1
                     b       L8
-                    sw      $v0, State($sp)
+                    move    $t2, $v0
 LSM57:
                     beqz    $v0, LSM47
                     andi    $s0, $v1, 0xFF
@@ -197,14 +188,13 @@ L93:
                     b       LSM57
                     li      $v0, 1
 LSM62:
-                    lw      $v1, State($sp)
-                    sll     $v0, $v1, 1
+                    sll     $v0, $t2, 1
                     addu    $s0, $s6, $v0
                     bal     Check_Bound
                     addiu   $a0, $s0, 0x180
 
                     beqz    $v0, LSM154
-                    lw      $a0, State($sp)
+                    move    $a0, $t2
 
                     li      $a2, 3
                     lw      $a1, var_B0($sp)
@@ -214,7 +204,7 @@ LSM62:
                     movn    $a2, $0, $v0
                     sw      $a1, var_AC($sp)
                     sw      $v1, var_B0($sp)
-                    sw      $a2, State($sp)
+                    move    $t2, $a2
                     sw      $s5, var_B4($sp)
 LSM73:
                     bal     Check_Bound
@@ -241,7 +231,7 @@ LSM80:
                     bnez    $s1, LSM80
                     movz    $s3, $s0, $v0
 
-                    lw      $v0, State($sp)
+                    move    $v0, $t2
                     slti    $v1, $v0, 4
                     li      $v0, 1
                     sllv    $v0, $v0, $s4
@@ -253,13 +243,11 @@ LSM80:
                     li      $v0, 3
                     movn    $v0, $s3, $v1
                     li      $s1, 6
-                    lw      $v1, State($sp)
                     sll     $v0, 7
                     addu    $v0, $s6, $v0
                     li      $a1, 1
-                    addiu   $v1, 7
+                    addiu   $t2, 7
                     addiu   $s2, $v0, 0x360
-                    sw      $v1, State($sp)
 LSM97:
                     sll     $s0, $a1, 1
                     addiu   $s1, 0xFFFF
@@ -330,39 +318,34 @@ L95:
                     b       L8
                     sltu    $a1, $s7, $t5
 LSM128:
-                    lui     $a3, 0xFF
                     addiu   $s1, $a0, 0xFFFB
-                    li      $a3, 0xFFFFFF
-                    lw      $a1, Range($sp)
 L104:
                     addiu   $s1, 0xFFFF
                     sll     $s5, 1
-                    sltu    $v0, $a3, $a1
+                    sltu    $v0, $t0, $t6
                     bnez    $v0, LSM135
-                    sll     $v1, $a1, 8
+                    sll     $v1, $t6, 8
 
-                    daddu   $a1, $v1, $0
-                    sw      $v1, Range($sp)
-                    
+                    move    $t6, $v1
                     lbu     $a0, 0($t8)
                     addiu   $t8, 1
                     sll     $t9, 8
                     or      $t9, $a0
 LSM135:
                     move    $v1, $t9
-                    srl     $v0, $a1, 1
+                    srl     $v0, $t6, 1
                     subu    $a0, $v1, $v0
                     sltu    $v1, $v0
                     bnez    $v1, LSM140
+                    move    $t6, $v0
 
-                    sw      $v0, Range($sp)
                     move    $t9, $a0
                     ori     $s5, 1
 LSM140:
                     bnez    $s1, L104
-                    lw      $a1, Range($sp)
-
+                    #nop                 # not necessary
                     addiu   $s2, $s6, 0x644
+
                     sll     $s5, 4
                     b       LBB24
                     li      $s1, 4
@@ -388,43 +371,37 @@ LSM154:
                     addiu   $a0, $s0, 0x198
 
                     beqz    $v0, LBB29
-                    lw      $a1, State($sp)
+                    sll     $a0, $t2, 5
 
                     sll     $v0, $s1, 1
-                    sll     $a0, $a1, 5
                     addu    $a0, $s6, $a0
                     addu    $a0, $v0
                     bal     Check_Bound
                     addiu   $a0, 0x1E0
 
                     beqzl   $v0, L105
-                    lw      $a1, State($sp)
+                    nop
 
                     move    $a0, $t4
                     subu    $v0, $s7, $s5
-                    lw      $a2, State($sp)
-                    li      $a1, 9
                     addu    $v0, $t4, $v0
                     addu    $a0, $s7
                     lbu     $s0, 0($v0)
-                    slti    $v1, $a2, 7
+                    slti    $v1, $t2, 7
                     li      $v0, 0xB
-                    movz    $a1, $v0, $v1
+                    li      $t2, 9
+                    movz    $t2, $v0, $v1
                     addiu   $s7, 1
-                    sw      $a1, State($sp)
                     sltu    $a1, $s7, $t5
                     b       L8
                     sb      $s0, 0($a0)
-LSM168:
-                    lw      $a1, State($sp)
 L105:
-                    li      $a2, 8
                     li      $v0, 0xB
                     addiu   $s2, $s6, 0xA68
-                    slti    $v1, $a1, 7
-                    movz    $a2, $v0, $v1
+                    slti    $v1, $t2, 7
+                    li      $t2, 8
                     b       LSM73
-                    sw      $a2, State($sp)
+                    movz    $t2, $v0, $v1
 LBB29:
                     bal     Check_Bound
                     addiu   $a0, $s0, 0x1B0
@@ -433,7 +410,7 @@ LBB29:
                     lw      $v1, var_B4($sp)
 LSM172:
                     sw      $s5, var_B4($sp)
-                    b       LSM168
+                    b       L105
                     daddu   $s5, $v1, $0
 LSM174:
                     bal     Check_Bound
@@ -449,5 +426,4 @@ LSM179:
                     lw      $a0, var_B4($sp)
                     b       LSM172
                     sw      $a0, var_B0($sp)
-
 Fin:
