@@ -31,7 +31,7 @@ static void *a[kDebugSize];
 static int index = 0;
 
 static int numAllocs = 0;
-void *__cdecl operator new(size_t size)
+void * operator new(size_t size)
 {
     numAllocs++;
     void *p = HeapAlloc(GetProcessHeap(), 0, size);
@@ -76,7 +76,7 @@ public:
     }
 } g_CC;
 
-void __cdecl operator delete(void *p)
+void operator delete(void *p)
 {
     if (p == 0)
     {
