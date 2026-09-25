@@ -15,6 +15,12 @@
 #define MAX_PATH 1024
 #endif
 
+#if defined(_WIN32)
+#define SEPARATOR "\\"
+#else
+#define SEPARATOR "/"
+#endif
+
 #include <stdio.h>
 
 #if defined(_WIN32) || defined(OS2) || defined(MSDOS)
@@ -34,19 +40,12 @@
 #include "../LZMA/LZMAEncoder.h"
 #include "ELF.h"
 
-#define DEPACKER_MEMORY
-
-#ifdef DEPACKER_MEMORY
 #include "depacker.h"
-#endif
 
 using namespace NCommandLineParser;
 
 char tempName[MAX_PATH + 1];
 char tempName2[MAX_PATH + 1];
-#ifndef DEPACKER_MEMORY
-char depackerName[MAX_PATH + 1];
-#endif
 
 static void PrintHelp()
 {
@@ -102,25 +101,11 @@ int main2(int n, const char *args[])
         return 0;
     }
 
-    GetModuleFileName(NULL, tempName, MAX_PATH);
-    GetModuleFileName(NULL, tempName2, MAX_PATH);
-
-#ifndef DEPACKER_MEMORY
-    GetModuleFileName(NULL, depackerName, MAX_PATH);
-#endif
-
     PathRemoveFileSpec(tempName);
     PathRemoveFileSpec(tempName2);
 
-#ifndef DEPACKER_MEMORY
-    PathRemoveFileSpec(depackerName);
-#endif
-
-    strcat(tempName, "\\pack.tmp");
-    strcat(tempName2, "\\pack2.tmp");
-#ifndef DEPACKER_MEMORY
-    strcat(depackerName, "\\depacker.bin");
-#endif
+    strcat(tempName, "pack.tmp");
+    strcat(tempName2, "pack2.tmp");
 
     UStringVector commandStrings;
     WriteArgumentsToStringList(n, args, commandStrings);
@@ -291,11 +276,11 @@ int main2(int n, const char *args[])
 
     int Input_Size = Get_File_Size(GetSystemString(inputName));
 
-    printf("\nInput: '%s'\n", GetSystemString(inputName));
-    printf("Output: '%s'\n", GetSystemString(outputName));
+    printf("\nInput: '%s'\n", GetSystemString(inputName).GetBuffer(GetSystemString(inputName).Length()));
+    printf("Output: '%s'\n", GetSystemString(outputName).GetBuffer(GetSystemString(inputName).Length()));
 
-    printf("\nStarting address: 0x%x\n", (u32) Get_ELF_Base_Address());
-    printf("Entry point: 0x%x\n\n", (u32) Get_ELF_Entry_Point());
+    printf("\nStarting address: 0x%x\n", (unsigned int) Get_ELF_Base_Address());
+    printf("Entry point: 0x%x\n\n", (unsigned int) Get_ELF_Entry_Point());
 
     printf("Packing file... ");
 
@@ -330,49 +315,10 @@ int main2(int n, const char *args[])
     BYTE *Depacker_Mem;
     DWORD *dwDepacker_Mem;
 
-    // Depacker file structure:
-    //
-    // - Relative offset to Source address.l
-    // - Relative offset to dest address.l
-    // - Relative offset to temporary buffer.l
-    // - Relative offset to jump address.l
-    // - Code.b
-
-#ifndef DEPACKER_MEMORY
-    FILE *Depacker_File;
-
-    Depacker_FileDepacker_File = fopen(depackerName, "rb")  
-    if(Depacker_FileDepacker_File)
-    {
-        fseek(Depacker_File, 0, SEEK_END);
-        Depacker_File_Size = ftell(Depacker_File);
-        fseek(Depacker_File, 0, SEEK_SET);
-        Depacker_Code_Size = Depacker_File_Size - 16;
-        Depacker_Mem = (BYTE *) malloc(Depacker_File_Size);
-        dwDepacker_Mem = (DWORD *) Depacker_Mem;
-        if(Depacker_Mem)
-        {
-            fread(Depacker_Mem, 1, Depacker_File_Size, Depacker_File);
-            fclose(Depacker_File);
-        }
-        else
-        {
-            fclose(Depacker_File);
-            printf("not enough memory\n");
-            return 1;   
-        }
-    }
-    else
-    {
-        printf("can't open depacker.bin file\n");
-        return 1;   
-    }
-#else
     Depacker_File_Size = size_depacker_bin;
     Depacker_Code_Size = Depacker_File_Size - 16;
     Depacker_Mem = (BYTE *) depacker_bin;
     dwDepacker_Mem = (DWORD *) Depacker_Mem;
-#endif
 
     Post_File = fopen(GetOemString(tempName2), "rb");   
     if(Post_File)
