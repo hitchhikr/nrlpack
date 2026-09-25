@@ -90,7 +90,7 @@ int main2(int n, const char *args[])
 {
     int i;
 
-    printf("NRLPack v"VERSION"."REVISION" written by hitchhikr of Neural^Rebels\n");
+    printf("NRLPack v"VERSION"."REVISION" written by hitchhikr of Neural\n");
 
     if(n < 2)
     {
