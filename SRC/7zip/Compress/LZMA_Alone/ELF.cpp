@@ -18,7 +18,7 @@ elf_pheader_t *eph;
 elf_section_header *shead;
 int Nbr_Elf_Sections;
 
-u32 ELF_Base;	 /* Loading address */
+u32 ELF_Base;	/* Loading address */
 u32 ELF_PC;     /* Entry point */
 u32 ELF_Size;   /* Final size */
 
@@ -44,7 +44,7 @@ int Check_ELF(u8 *Buffer)
 u8 *Parse_ELF(u8 *Buffer, int Size)
 {
 	u8 *Dest_Buffer;
-	elf_section_header *Tmpshead;
+	elf_section_header *Tmp_shead;
 	int First_Section;
 	int i;
 
@@ -65,41 +65,61 @@ u8 *Parse_ELF(u8 *Buffer, int Size)
     memset(Dest_Buffer, 0, Size);
 	Nbr_Elf_Sections = eh->shnum;
 	shead = (elf_section_header *) (Buffer + eh->shoff);
-	Tmpshead = shead;
+	Tmp_shead = shead;
 	First_Section = 0;
 	ELF_Size = 0;
 
     if(Nbr_Elf_Sections)
     {
-	   // Copy the relevants sections
+	    // Copy the relevants sections
 	    for(i = 0; i < Nbr_Elf_Sections; i++)
         {
-		    if(Tmpshead->size && (Tmpshead->type & SHT_PROGBITS) && (Tmpshead->flags & SHF_ALLOC))
+		    if(Tmp_shead->size && (Tmp_shead->type & SHT_PROGBITS) && (Tmp_shead->flags & SHF_ALLOC))
             {
 			    if(!First_Section)
                 {
-                    First_Section = Tmpshead->offset;
+                    First_Section = Tmp_shead->offset;
                 }
-                memcpy(Dest_Buffer + Tmpshead->offset - First_Section, Buffer + Tmpshead->offset, Tmpshead->size);
-			    ELF_Size = ((Dest_Buffer + Tmpshead->offset - First_Section) + Tmpshead->size) - Dest_Buffer;
+                memcpy(Dest_Buffer + Tmp_shead->offset - First_Section, Buffer + Tmp_shead->offset, Tmp_shead->size);
+			    ELF_Size = ((Dest_Buffer + Tmp_shead->offset - First_Section) + Tmp_shead->size) - Dest_Buffer;
 		    }
-		    Tmpshead++;
+		    Tmp_shead++;
         }
     }
     else
     {
-        // No sections infos, copy everything but the header
-        if(eph->offset)
+        // There was no sections
+        Nbr_Elf_Sections = eh->phnum;
+        if(Nbr_Elf_Sections > 1)
         {
-            ELF_Size = eph->filesz;
-            memcpy(Dest_Buffer, Buffer + eph->offset, ELF_Size);
+            for(i = 0; i < Nbr_Elf_Sections; i++)
+            {
+                if(eph->vaddr < ELF_Base)
+                {
+                    // Can happen with hand crafted files.
+                    free(Dest_Buffer);
+                    return NULL;
+                }
+                memcpy(Dest_Buffer + ELF_Size, Buffer + eph->offset, eph->filesz);
+                ELF_Size += eph->filesz;
+                eph++;
+            }
         }
         else
         {
-            // Mangled header
-            ELF_Size = eph->filesz - (eh->phoff + eh->phentsize);        
-            memcpy(Dest_Buffer, Buffer + eh->phoff + eh->phentsize, ELF_Size);
-            ELF_Base = ELF_PC;
+            // No sections infos, copy everything but the header
+            if(eph->offset)
+            {
+                ELF_Size = eph->filesz;
+                memcpy(Dest_Buffer, Buffer + eph->offset, ELF_Size);
+            }
+            else
+            {
+                // Mangled header
+                ELF_Size = eph->filesz - (eh->phoff + eh->phentsize);        
+                memcpy(Dest_Buffer, Buffer + eh->phoff + eh->phentsize, ELF_Size);
+                ELF_Base = ELF_PC;
+            }
         }
     }
 	return(Dest_Buffer);

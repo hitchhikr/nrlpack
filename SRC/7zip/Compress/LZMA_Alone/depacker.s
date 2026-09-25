@@ -1,6 +1,6 @@
 # -------------------------------------------------
 # NRLPack LZMA Depacker v1.3
-# 1292 bytes
+# 1276 bytes
 
                     .set    noreorder
                     .global _start
@@ -16,6 +16,8 @@ var_B0              =       -0x8
 var_AC              =       -0x4
 
 KBITMODELTOTAL      =       2048
+
+FlushCache          =       100
 
 # $a0 = u16 *probLit
 Check_Bound:
@@ -61,7 +63,7 @@ LSM17:
 # ----------------------------------------------------------------------
 _start:
 Source:
-                    la      $t8, 0x12345678     # 0x1500008
+                    la      $t8, 0x12345678     # Src (InStream)
 Dest:
                     la      $t4, 0x12345678     # Dst (OutStream)
 Temp:
@@ -148,9 +150,13 @@ L8:
                     bnezl   $a1, depack_loop
                     nop
 End_Depack:
+                    li      $v1, FlushCache
+                    li      $a0, 0
+                    syscall
+                    nop
                     daddu   $a0, $t7, 0         # restore args
 Run_Datas:
-                    j       0x02345678          # Entry point 0x7a2700 #
+                    j       0x02345678          # Entry point
 LSM51:
                     move    $v0, $t2
                     addiu   $a0, $v0, 0xFFFA

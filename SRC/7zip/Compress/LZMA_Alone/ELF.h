@@ -3,6 +3,9 @@ typedef unsigned long int u32;
 typedef unsigned short int u16;
 typedef unsigned char u8;
 
+#pragma pack(push)
+#pragma pack(1)
+
 typedef struct
 {
     u8  ident[16];    /* The first 4 bytes are the ELF magic */
@@ -52,6 +55,8 @@ typedef struct
 	u32 addralign;
 	u32 entsize;
 } elf_section_header;
+
+#pragma pack(pop)
 
 #define PT_LOAD 1
 #define PF_X 1

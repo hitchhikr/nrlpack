@@ -1,18 +1,11 @@
+// --------------------------------------------
 // NRLPack
 // Written by Franck Charlet.
 // Modified LZMA algorithm based on the work of Igor Pavlov.
 // --------------------------------------------
-// v1.2:
-//  - Shortened depacker.
-// v1.1:
-//  - Added support for elf files with mangled headers.
-// --------------------------------------------
-// TODO:
-//  - Create a disassembler and add code filtering.
-// --------------------------------------------
 
 #define VERSION "1"
-#define REVISION "3"
+#define REVISION "4"
 
 #include "../../../Common/MyWindows.h"
 #include "../../../Common/MyInitGuid.h"
@@ -371,7 +364,7 @@ int main2(int n, const char *args[])
         return 1;   
     }
 #else
-    Depacker_File_Size = depacker_bin_size;
+    Depacker_File_Size = size_depacker_bin;
     Depacker_Code_Size = Depacker_File_Size - 16;
     Depacker_Mem = (BYTE *) depacker_bin;
     dwDepacker_Mem = (DWORD *) Depacker_Mem;
@@ -473,7 +466,7 @@ int main2(int n, const char *args[])
                 Depacker_Mem[dwDepacker_Mem[2]] = (BYTE) ((TmpAddress & 0xff0000) >> 16);
                 Depacker_Mem[dwDepacker_Mem[2] + 1] = (BYTE) ((TmpAddress & 0xff000000) >> 24);
 
-                // JUmp address
+                // Jump address
                 u32 JumpInstruction = (Get_ELF_Entry_Point() >> 2) | 0x8000000;
                 Depacker_Mem[dwDepacker_Mem[3]] = (BYTE) (JumpInstruction & 0xff);
                 Depacker_Mem[dwDepacker_Mem[3] + 1] = (BYTE) ((JumpInstruction & 0xff00) >> 8);
@@ -515,24 +508,10 @@ int main2(int n, const char *args[])
     printf("--------------------------------------\n");
     printf("%10d %10d", Input_Size, Output_Size);
     printf(" %10d %.02f\n", Input_Size - Output_Size, (((float) (Input_Size - Output_Size)) * 100.0f) / (float) Input_Size);
-    
     return 0;
 }
 
 int main(int n, const char *args[])
 {
-//    try
-    {
-        return main2(n, args);
-    }
-  /*  catch(const char *s)
-    {
-        printf("\nError: %s\n", s);
-        return 1; 
-    }
-    catch(...)
-    {
-        printf("\nException error !\n");
-        return 1; 
-    }*/
+    return main2(n, args);
 }
