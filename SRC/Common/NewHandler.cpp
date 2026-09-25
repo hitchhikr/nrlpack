@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-void * __cdecl operator new(size_t size)
+void * operator new(size_t size)
 {
     void *p = ::malloc(size);
     if (p == 0)
@@ -18,7 +18,7 @@ void * __cdecl operator new(size_t size)
     return p;
 }
 
-void __cdecl operator delete(void *p)
+void operator delete(void *p)
 {
     ::free(p);
 }
