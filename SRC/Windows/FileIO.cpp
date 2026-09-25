@@ -110,26 +110,6 @@ namespace NWindows
                 return Seek(0, FILE_END, newPosition);
             }
 
-            bool CFileBase::GetFileInformation(CByHandleFileInfo &fileInfo) const
-            {
-                BY_HANDLE_FILE_INFORMATION winFileInfo;
-                if(!::GetFileInformationByHandle(_handle, &winFileInfo))
-                {
-                    return false;
-                }
-                fileInfo.Attributes = winFileInfo.dwFileAttributes;
-                fileInfo.CreationTime = winFileInfo.ftCreationTime;
-                fileInfo.LastAccessTime = winFileInfo.ftLastAccessTime;
-                fileInfo.LastWriteTime = winFileInfo.ftLastWriteTime;
-                fileInfo.VolumeSerialNumber = winFileInfo.dwFileAttributes; 
-                fileInfo.Size = (((UINT64)winFileInfo.nFileSizeHigh) << 32) + 
-                                winFileInfo.nFileSizeLow;
-                fileInfo.NumberOfLinks = winFileInfo.nNumberOfLinks;
-                fileInfo.FileIndex = (((UINT64)winFileInfo.nFileIndexHigh) << 32) + 
-                                     winFileInfo.nFileIndexLow;
-                return true;
-            }
-
             /////////////////////////
             // CInFile
 

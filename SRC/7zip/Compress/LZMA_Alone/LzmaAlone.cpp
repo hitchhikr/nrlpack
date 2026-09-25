@@ -90,7 +90,7 @@ int main2(int n, const char *args[])
 {
     int i;
 
-    printf("NRLPack v"VERSION"."REVISION" written by hitchhikr of Neural\n");
+    printf("NRLPack v" VERSION "." REVISION " written by hitchhikr of Neural\n");
 
     if(n < 2)
     {
@@ -317,7 +317,7 @@ int main2(int n, const char *args[])
         0x7f, 0x45, 0x4c, 0x46, 0x01, 0x01, 0x01, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    char *Pack_ID = "NRLPack v"VERSION"."REVISION;
+    char *Pack_ID = (char *) ("NRLPack v" VERSION "." REVISION);
     BYTE Pad_Byte = 0;
     int Pad_Length;
     int Depacker_File_Size;

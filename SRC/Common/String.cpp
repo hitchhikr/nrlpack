@@ -6,7 +6,7 @@
 #include <ctype.h>
 #endif
 
-#include "Common/String.h"
+#include "String.h"
 
 #ifdef _WIN32
 

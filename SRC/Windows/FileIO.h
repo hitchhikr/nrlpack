@@ -53,8 +53,6 @@ namespace NWindows
                 bool Seek(UINT64 position, UINT64 &newPosition); 
                 bool SeekToBegin(); 
                 bool SeekToEnd(UINT64 &newPosition); 
-  
-                bool GetFileInformation(CByHandleFileInfo &fileInfo) const;
             };
 
             class CInFile: public CFileBase

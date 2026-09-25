@@ -1,0 +1,68 @@
+CC = gcc
+CPP = g++
+LIBS = -lshlwapi
+CFLAGS = -O2 -c
+CPPFLAGS = $(CFLAGS) 
+
+EXEOBJS = FileStreams.o InBuffer.o OutBuffer.o LZInWindow.o LZMAEncoder.o LzmaAlone.o ELF.o RangeCoderBit.o \
+          Alloc.o C_FileIO.o CommandLineParser.o NewHandler.o String.o StringConvert.o StringToInt.o Vector.o \
+          FileIO.o
+
+all: NRLPack
+
+clean:
+	-rm -f $(EXEOBJS)
+
+NRLPack: $(EXEOBJS)
+	$(CPP) -o $(@) $(EXEOBJS) $(LIBS)
+
+FileStreams.o: 7zip/Common/FileStreams.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+InBuffer.o: 7zip/Common/InBuffer.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+OutBuffer.o: 7zip/Common/OutBuffer.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+LZInWindow.o: 7zip/Compress//LZ/LZInWindow.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+LZMAEncoder.o: 7zip/Compress//LZMA/LZMAEncoder.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+LzmaAlone.o: 7zip/Compress//LZMA_Alone/LzmaAlone.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+ELF.o: 7zip/Compress//LZMA_Alone/ELF.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+RangeCoderBit.o: 7zip/Compress/RangeCoder/RangeCoderBit.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+Alloc.o: Common/Alloc.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+C_FileIO.o: Common/C_FileIO.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+CommandLineParser.o: Common/CommandLineParser.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+NewHandler.o: Common/NewHandler.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+String.o: Common/String.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+StringConvert.o: Common/StringConvert.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+StringToInt.o: Common/StringToInt.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+Vector.o: Common/Vector.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
+
+FileIO.o: Windows/FileIO.cpp
+	$(CPP) -o $(@) $(CPPFLAGS) $<
