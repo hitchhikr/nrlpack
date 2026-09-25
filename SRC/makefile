@@ -1,12 +1,11 @@
 CC = gcc
 CPP = g++
-LIBS = -lshlwapi
+LIBS =
 CFLAGS = -O2 -c
 CPPFLAGS = $(CFLAGS) 
 
 EXEOBJS = FileStreams.o InBuffer.o OutBuffer.o LZInWindow.o LZMAEncoder.o LzmaAlone.o ELF.o RangeCoderBit.o \
-          Alloc.o CommandLineParser.o NewHandler.o String.o StringConvert.o StringToInt.o Vector.o \
-          FileIO.o
+          Alloc.o C_FileIO.o CommandLineParser.o NewHandler.o String.o StringConvert.o StringToInt.o Vector.o
 
 all: NRLPack
 

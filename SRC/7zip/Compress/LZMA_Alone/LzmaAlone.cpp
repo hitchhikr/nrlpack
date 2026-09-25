@@ -101,9 +101,6 @@ int main2(int n, const char *args[])
         return 0;
     }
 
-    PathRemoveFileSpec(tempName);
-    PathRemoveFileSpec(tempName2);
-
     strcat(tempName, "pack.tmp");
     strcat(tempName2, "pack2.tmp");
 
