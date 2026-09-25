@@ -150,10 +150,9 @@ L8:
                     bnezl   $a1, depack_loop
                     nop
 End_Depack:
-                    li      $v1, FlushCache
                     li      $a0, 0
+                    li      $v1, FlushCache
                     syscall
-                    nop
                     daddu   $a0, $t7, 0         # restore args
 Run_Datas:
                     j       0x02345678          # Entry point
