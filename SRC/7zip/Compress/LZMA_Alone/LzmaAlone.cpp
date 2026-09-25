@@ -9,7 +9,11 @@
 
 #include "../../../Common/MyWindows.h"
 #include "../../../Common/MyInitGuid.h"
+#ifdef _WIN32
 #include <shlwapi.h>
+#else
+#define MAX_PATH 1024
+#endif
 
 #include <stdio.h>
 
@@ -290,8 +294,8 @@ int main2(int n, const char *args[])
     printf("\nInput: '%s'\n", GetSystemString(inputName));
     printf("Output: '%s'\n", GetSystemString(outputName));
 
-    printf("\nStarting address: 0x%x\n", Get_ELF_Base_Address());
-    printf("Entry point: 0x%x\n\n", Get_ELF_Entry_Point());
+    printf("\nStarting address: 0x%x\n", (u32) Get_ELF_Base_Address());
+    printf("Entry point: 0x%x\n\n", (u32) Get_ELF_Entry_Point());
 
     printf("Packing file... ");
 
@@ -306,7 +310,7 @@ int main2(int n, const char *args[])
     inStream = NULL;
     outStream = NULL;
 
-    DeleteFile(tempName);
+    remove(tempName);
 
     // Correct the header of the file
     FILE *Post_File;
@@ -386,7 +390,7 @@ int main2(int n, const char *args[])
         {
            fread(Post_Mem, 1, Post_File_Size, Post_File);
             fclose(Post_File);
-            DeleteFile(tempName2);
+            remove(tempName2);
 
             Post_File = fopen(GetOemString(outputName), "wb");
             if(Post_File)
@@ -489,7 +493,7 @@ int main2(int n, const char *args[])
         else
         {
             fclose(Post_File);
-            DeleteFile(tempName2);
+            remove(tempName2);
             printf("not enough memory\n");
             return 1;
         }
