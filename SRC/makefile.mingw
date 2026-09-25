@@ -13,7 +13,7 @@ clean:
 	-rm -f $(EXEOBJS)
 
 NRLPack: $(EXEOBJS)
-	$(CPP) -o $(@) $(EXEOBJS) $(LIBS)
+	$(CPP) -o ../$(@) $(EXEOBJS) $(LIBS)
 
 FileStreams.o: 7zip/Common/FileStreams.cpp
 	$(CPP) -o $(@) $(CPPFLAGS) $<
